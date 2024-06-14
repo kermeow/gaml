@@ -11,6 +11,7 @@ config_version=4
 [application]
 
 config/name="GAML"
+config/description="Godot Advanced Mod Loader"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="GAML"
 
