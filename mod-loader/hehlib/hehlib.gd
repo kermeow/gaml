@@ -17,10 +17,10 @@ func _create_hook(node: Node, method: String):
 	_hooks[hook_id] = {"node": node, "method": method}
 	return hook_id
 
-func _execute_hook(hook_id:String, caller:Node, params:Array):
+func _execute_hook(hook_id:String, context: HookContext):
 	var hook = _hooks.get(hook_id)
 	if hook == null: return
-	return hook.node.call(hook.method, caller, params)
+	return hook.node.call(hook.method, context)
 
 var script_hooks = {}
 var script_special_hooks = {}
@@ -63,10 +63,9 @@ func hook_script_special(path: String, method: String, node: Node, hook_method: 
 	var method_hooks = _get_special_hooks(path, method)
 	method_hooks.append(hook_id)
 
-func _generate_hooked_script(path: String) -> GDScript:
+func _generate_hooked_script(path: String, script: GDScript = GDScript.new()) -> GDScript:
 	var original_script = load(path) as GDScript
 	var method_list = _parse_method_list(original_script.get_script_method_list())
-	var script = GDScript.new()
 	var source = "extends \"%s\"\n" % path
 	source += "var hehlib = GAML.hehlib\n"
 	var call_index = 0
@@ -77,14 +76,15 @@ func _generate_hooked_script(path: String) -> GDScript:
 			var method_hooks = hooks.get(method_name)
 			var method = method_list.get(method_name)
 			source += "func %s(%s):\n" % [method.name, method.arg_string]
+			source += "\tvar _ctx = hehlib.HookContext.new(self, \"%s\", [%s])\n" % [method.name, method.arg_string]
 			for prefix in method_hooks.prefixes:
-				source += "\tvar _r%02x = hehlib._execute_hook(\"%s\", self, [%s])\n" % [call_index, prefix, method.arg_string]
+				source += "\tvar _r%02x = hehlib._execute_hook(\"%s\", _ctx)\n" % [call_index, prefix]
 				call_index += 1
-			source += "\tvar _r = .%s(%s)\n" % [method.name, method.arg_string]
+			source += "\t_ctx._result = .%s(%s)\n" % [method.name, method.arg_string]
 			for postfix in method_hooks.postfixes:
-				source += "\tvar _r%02x = hehlib._execute_hook(\"%s\", self, [_r,%s])\n" % [call_index, postfix, method.arg_string]
+				source += "\tvar _r%02x = hehlib._execute_hook(\"%s\", _ctx)\n" % [call_index, postfix]
 				call_index += 1
-			source += "\treturn _r\n"
+			source += "\treturn _ctx.get_result()\n"
 	if script_special_hooks.has(path):
 		var hooks = script_special_hooks.get(path)
 		for method_name in hooks.keys():
@@ -92,9 +92,11 @@ func _generate_hooked_script(path: String) -> GDScript:
 			var arg_string = ""
 			if method_name == "_process" or method_name == "_physics_process": arg_string = "_delta"
 			source += "func %s(%s):\n" % [method_name, arg_string]
+			source += "\tvar _ctx = hehlib.HookContext.new(self, \"%s\", [%s])\n" % [method_name, arg_string]
 			for hook in method_hooks:
-				source += "\tvar _r%02x = hehlib._execute_hook(\"%s\", self, [%s])\n" % [call_index, hook, arg_string]
+				source += "\tvar _r%02x = hehlib._execute_hook(\"%s\", _ctx)\n" % [call_index, hook]
 				call_index += 1
+			source += "\treturn _ctx.get_result()\n"
 	script.source_code = source
 	script.reload()
 	return script
@@ -114,6 +116,7 @@ func _parse_method_list(method_list: Array) -> Dictionary:
 		methods[method.name] = method
 	return methods
 
+var _old_scripts = {}
 var _script_cache = {}
 
 func _get_hooked_script(path: String) -> GDScript:
@@ -130,3 +133,28 @@ func load_script(path: String):
 
 func has(path: String):
 	return script_hooks.has(path) or script_special_hooks.has(path)
+
+func inject_hooked_scripts():
+	for path in script_hooks.keys():
+		_get_hooked_script(path).take_over_path(path)
+	for path in script_special_hooks.keys():
+		if path in _script_cache.keys(): continue
+		_get_hooked_script(path).take_over_path(path)
+
+class HookContext:
+	extends Reference
+	
+	var caller: Node
+	var method_name: String
+	var arguments: Array
+	var _result = null
+	var result = null
+	
+	func get_result():
+		if result != null: return result
+		return _result
+	
+	func _init(_caller: Node, _method_name: String, _arguments: Array):
+		caller = _caller
+		method_name = _method_name
+		arguments = _arguments

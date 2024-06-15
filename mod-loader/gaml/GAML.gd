@@ -90,7 +90,7 @@ func _load_game():
 		logger.output("Enabling autoload %s" % key)
 		var node = get_node("/root/%s" % key)
 		var script_path = game_cfg.get_value("autoload", key).trim_prefix("*")
-		var script = hehlib.load_script(script_path)
+		var script = load(script_path)# hehlib.load_script(script_path)
 		node.set_script(script)
 		call_deferred("_reinit_node", node, false)
 	
@@ -118,7 +118,8 @@ func _enter_tree():
 	get_tree().change_scene("res://gaml/Loading.tscn")
 
 func _ready():
+	
 	_load_asset_mods()
 	
-	get_tree().set_script(preload("res://hehlib/HookedSceneTree.gd"))
+	hehlib.inject_hooked_scripts()
 	call_deferred("_load_game")
