@@ -118,10 +118,6 @@ func _enter_tree():
 	get_tree().change_scene("res://gaml/Loading.tscn")
 
 func _ready():
-	hehlib.hook_script_prefix("res://scripts/Globals.gd", "_ready", self, "test")
 	
 	_load_asset_mods()
 	call_deferred("_load_game")
-
-func test(caller, p):
-	print("Hi!!! Hook on _ready on %s" % caller)
