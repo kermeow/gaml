@@ -31,6 +31,7 @@ Thank you [pyrule](https://github.com/Gapva) for the logo and social preview ❤
 	- [ ] Initialise mods
 	- [x] Load game
 - [ ] Harmony-esque hooking
+	- [ ] "Injection"/detours
 	- [ ] Prefixes
 	- [ ] Postfixes
 	- [ ] Result replacement
