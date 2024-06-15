@@ -16,6 +16,10 @@ config/use_custom_user_dir=true
 config/custom_user_dir_name="GAML"
 config/icon="res://gaml.svg"
 
+[autoload]
+
+GAML="*res://gaml/GAML.gd"
+
 [display]
 
 window/size/width=640
