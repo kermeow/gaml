@@ -22,6 +22,8 @@ func _verify_gaml_files():
 	if !dir.dir_exists(gaml_path): _emergency_exit(error % "gaml")
 	if !dir.file_exists(gaml_path.plus_file("game.cfg")): _emergency_exit(error % "game.cfg")
 	if !dir.file_exists(gaml_path.plus_file("gaml.cfg")): _emergency_exit(error % "gaml.cfg")
+	if !dir.dir_exists(gaml_path.plus_file("mods")): dir.make_dir_recursive(gaml_path.plus_file("mods"))
+	if !dir.dir_exists(gaml_path.plus_file("asset-mods")): dir.make_dir_recursive(gaml_path.plus_file("asset-mods"))
 	return OK
 
 func _enter_tree():
@@ -37,8 +39,6 @@ func _reinit_node(node: Node, recursive: bool = false):
 	node.call(method, NOTIFICATION_POST_ENTER_TREE)
 	node.call(method, NOTIFICATION_READY)
 
-signal load_game_stage # (message: String)
-signal load_game_finished # ()
 var _is_game_loaded = false
 func _load_game():
 	if _is_game_loaded: return

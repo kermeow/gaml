@@ -21,6 +21,8 @@ Thank you [pyrule](https://github.com/Gapva) for the logo and social preview ❤
 - [ ] Mod loading flow
 	- [x] "Inject" mod loader (via bootstrapper?)
 	- [ ] Load & verify mods
+		- [ ] GAML mods
+		- [ ] Asset mods
 	- [ ] Initialise mods
 	- [x] Load game
 - [ ] Harmony-esque hooking
