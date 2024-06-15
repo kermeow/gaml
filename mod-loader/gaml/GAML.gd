@@ -7,29 +7,44 @@ func _gaml_version():
 	var version = Semver.new()
 	version.parse("0.1.0")
 	return version
+var GodotVersion = _godot_version()
+func _godot_version():
+	var version = Semver.new()
+	var engine_version = Engine.get_version_info()
+	version.major = engine_version.major
+	version.minor = engine_version.minor
+	version.patch = engine_version.patch
+	return version
+
+const RuntimeAssetLoader = preload("res://gaml/RuntimeAssetLoader.gd")
+var asset_loader = RuntimeAssetLoader.new()
 
 #func _disable_setter(_value): return
 
 var exec_path = OS.get_executable_path().get_base_dir()
 var gaml_path = exec_path.plus_file("gaml")
 
-func _emergency_exit(reason:String = "Unknown"):
+var paths = {
+	"logs": gaml_path.plus_file("logs"),
+	"mods": gaml_path.plus_file("mods"),
+	"asset_mods": gaml_path.plus_file("asset-mods"),
+}
+
+# Utility functions
+func _emergency_exit(reason: String = "Unknown"):
 	push_error("Fatal GAML error: %s" % reason)
 	get_tree().quit()
+
 func _verify_gaml_files():
 	var error = "Missing file! %s"
 	var dir = Directory.new()
 	if !dir.dir_exists(gaml_path): _emergency_exit(error % "gaml")
 	if !dir.file_exists(gaml_path.plus_file("game.cfg")): _emergency_exit(error % "game.cfg")
 	if !dir.file_exists(gaml_path.plus_file("gaml.cfg")): _emergency_exit(error % "gaml.cfg")
-	if !dir.dir_exists(gaml_path.plus_file("mods")): dir.make_dir_recursive(gaml_path.plus_file("mods"))
-	if !dir.dir_exists(gaml_path.plus_file("asset-mods")): dir.make_dir_recursive(gaml_path.plus_file("asset-mods"))
+	if !dir.dir_exists(paths.logs): dir.make_dir_recursive(paths.logs)
+	if !dir.dir_exists(paths.mods): dir.make_dir_recursive(paths.mods)
+	if !dir.dir_exists(paths.asset_mods): dir.make_dir_recursive(paths.asset_mods)
 	return OK
-
-func _enter_tree():
-	get_tree().change_scene("res://gaml/Loading.tscn")
-func _ready():
-	call_deferred("_load_game")
 
 func _reinit_node(node: Node, recursive: bool = false):
 	var method = "notification"
@@ -39,6 +54,23 @@ func _reinit_node(node: Node, recursive: bool = false):
 	node.call(method, NOTIFICATION_POST_ENTER_TREE)
 	node.call(method, NOTIFICATION_READY)
 
+func _list_files(path: String, recursive: bool = false, include_dirs: bool = false):
+	var files = []
+	var dir = Directory.new()
+	dir.open(path)
+	dir.list_dir_begin(true, false)
+	var file = dir.get_next()
+	while !file.empty():
+		var full_path = path.plus_file(file)
+		if dir.dir_exists(full_path):
+			if include_dirs: files.append(full_path)
+			if recursive: files.append_array(_list_files(full_path, true, include_dirs))
+		if dir.file_exists(full_path):
+			files.append(full_path)
+		file = dir.get_next()
+	return files
+
+# Game (re)Loading
 var _is_game_loaded = false
 func _load_game():
 	if _is_game_loaded: return
@@ -58,3 +90,25 @@ func _load_game():
 	
 	var main_scene = game_cfg.get_value("application", "run/main_scene")
 	get_tree().change_scene(main_scene)
+
+# Asset Modding
+func _load_asset_mods():
+	var dir = Directory.new()
+	for path in _list_files(paths.asset_mods, false, true):
+		print(path)
+		if dir.dir_exists(path): _load_asset_mod(path)
+func _load_asset_mod(path):
+	var files = _list_files(path, true)
+	for file in files:
+		var local_path = file.trim_prefix(path).trim_prefix("/")
+		var resource = asset_loader.load_asset(file)
+		var res_path = "res://" + local_path
+		resource.take_over_path(res_path)
+
+# Main
+func _enter_tree():
+	get_tree().change_scene("res://gaml/Loading.tscn")
+
+func _ready():
+	_load_asset_mods()
+	call_deferred("_load_game")
