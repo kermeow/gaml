@@ -1,5 +1,13 @@
 extends Node
 
+const Semver = preload("res://gaml/Semver.gd")
+
+var Version = _gaml_version()
+func _gaml_version():
+	var version = Semver.new()
+	version.parse("0.1.0")
+	return version
+
 #func _disable_setter(_value): return
 
 var exec_path = OS.get_executable_path().get_base_dir()
