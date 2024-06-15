@@ -20,7 +20,7 @@ Thank you [pyrule](https://github.com/Gapva) for the logo and social preview ❤
 - [ ] Mod system
 	- [ ] Mod info (id, name, etc.)
 	- [x] Versioning system
-	- [ ] Logging
+	- [x] Logging
 	- [ ] Dependencies
 	- [ ] Export plugin
 - [ ] Mod loading flow

@@ -1,5 +1,14 @@
 extends Node
 
+var exec_path = OS.get_executable_path().get_base_dir()
+var gaml_path = exec_path.plus_file("gaml")
+
+var paths = {
+	"logs": gaml_path.plus_file("logs"),
+	"mods": gaml_path.plus_file("mods"),
+	"asset_mods": gaml_path.plus_file("asset-mods"),
+}
+
 const Semver = preload("res://gaml/Semver.gd")
 
 var Version = _gaml_version()
@@ -19,21 +28,18 @@ func _godot_version():
 const RuntimeAssetLoader = preload("res://gaml/RuntimeAssetLoader.gd")
 var asset_loader = RuntimeAssetLoader.new()
 
+const Logger = preload("res://gaml/Logger.gd")
+var Log = Logger.new("gaml")
+
 #func _disable_setter(_value): return
-
-var exec_path = OS.get_executable_path().get_base_dir()
-var gaml_path = exec_path.plus_file("gaml")
-
-var paths = {
-	"logs": gaml_path.plus_file("logs"),
-	"mods": gaml_path.plus_file("mods"),
-	"asset_mods": gaml_path.plus_file("asset-mods"),
-}
 
 # Utility functions
 func _emergency_exit(reason: String = "Unknown"):
-	push_error("Fatal GAML error: %s" % reason)
-	get_tree().quit()
+	var error = "Fatal GAML error: %s" % reason
+	Log.output(error)
+	Log.output("Quitting")
+	push_error(error)
+	get_tree().call_deferred("quit")
 
 func _verify_gaml_files():
 	var error = "Missing file! %s"
@@ -47,6 +53,7 @@ func _verify_gaml_files():
 	return OK
 
 func _reinit_node(node: Node, recursive: bool = false):
+	Log.output("Re-initialise node %s" % node)
 	var method = "notification"
 	if recursive: method = "propagate_notification"
 	node.call(method, NOTIFICATION_POSTINITIALIZE)
@@ -82,12 +89,14 @@ func _load_game():
 	game_cfg.load(gaml_path.plus_file("game.cfg"))
 	
 	for key in game_cfg.get_section_keys("autoload"):
+		Log.output("Enabling autoload %s" % key)
 		var node = get_node("/root/%s" % key)
 		var script_path = game_cfg.get_value("autoload", key).trim_prefix("*")
 		var script = load(script_path)
 		node.set_script(script)
 		call_deferred("_reinit_node", node, false)
 	
+	Log.output("Change to main scene")
 	var main_scene = game_cfg.get_value("application", "run/main_scene")
 	get_tree().change_scene(main_scene)
 
@@ -95,8 +104,9 @@ func _load_game():
 func _load_asset_mods():
 	var dir = Directory.new()
 	for path in _list_files(paths.asset_mods, false, true):
-		print(path)
-		if dir.dir_exists(path): _load_asset_mod(path)
+		if !dir.dir_exists(path): continue
+		Log.output("Loading asset mod from %s" % path)
+		_load_asset_mod(path)
 func _load_asset_mod(path):
 	var files = _list_files(path, true)
 	for file in files:
