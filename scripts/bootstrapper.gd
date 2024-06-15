@@ -10,5 +10,5 @@ func _init():
 		print("GAML.pck is missing!")
 		get_tree().quit()
 	ProjectSettings.load_resource_pack(gaml_pck)
-	GAML.set_script("res://gaml/GAML.gd")
+	GAML.set_script(load("res://gaml/GAML.gd"))
 	GAML.bootstrap_finish()
