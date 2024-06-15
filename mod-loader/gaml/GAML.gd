@@ -25,24 +25,22 @@ func _godot_version():
 	version.patch = engine_version.patch
 	return version
 
-const RuntimeAssetLoader = preload("res://gaml/RuntimeAssetLoader.gd")
-var asset_loader = RuntimeAssetLoader.new()
+var asset_loader = preload("res://gaml/RuntimeAssetLoader.gd").new()
 
-const Logger = preload("res://gaml/Logger.gd")
-var Log = Logger.new("gaml")
+var logger = preload("res://gaml/Logger.gd").new("gaml")
 
 #func _disable_setter(_value): return
 
 # Utility functions
 func _emergency_exit(reason: String = "Unknown"):
 	var error = "Fatal GAML error: %s" % reason
-	Log.output(error)
-	Log.output("Quitting")
+	logger.output(error)
+	logger.output("Quitting")
 	push_error(error)
 	get_tree().call_deferred("quit")
 
 func _verify_gaml_files():
-	var error = "Missing file! %s"
+	var error = "Missing file! %s\nYou might need to reinstall GAML."
 	var dir = Directory.new()
 	if !dir.dir_exists(gaml_path): _emergency_exit(error % "gaml")
 	if !dir.file_exists(gaml_path.plus_file("game.cfg")): _emergency_exit(error % "game.cfg")
@@ -53,7 +51,7 @@ func _verify_gaml_files():
 	return OK
 
 func _reinit_node(node: Node, recursive: bool = false):
-	Log.output("Re-initialise node %s" % node)
+	logger.output("Re-initialise node %s" % node)
 	var method = "notification"
 	if recursive: method = "propagate_notification"
 	node.call(method, NOTIFICATION_POSTINITIALIZE)
@@ -89,14 +87,14 @@ func _load_game():
 	game_cfg.load(gaml_path.plus_file("game.cfg"))
 	
 	for key in game_cfg.get_section_keys("autoload"):
-		Log.output("Enabling autoload %s" % key)
+		logger.output("Enabling autoload %s" % key)
 		var node = get_node("/root/%s" % key)
 		var script_path = game_cfg.get_value("autoload", key).trim_prefix("*")
 		var script = load(script_path)
 		node.set_script(script)
 		call_deferred("_reinit_node", node, false)
 	
-	Log.output("Change to main scene")
+	logger.output("Change to main scene")
 	var main_scene = game_cfg.get_value("application", "run/main_scene")
 	get_tree().change_scene(main_scene)
 
@@ -105,7 +103,7 @@ func _load_asset_mods():
 	var dir = Directory.new()
 	for path in _list_files(paths.asset_mods, false, true):
 		if !dir.dir_exists(path): continue
-		Log.output("Loading asset mod from %s" % path)
+		logger.output("Loading asset mod from %s" % path)
 		_load_asset_mod(path)
 func _load_asset_mod(path):
 	var files = _list_files(path, true)
