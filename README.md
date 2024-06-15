@@ -9,7 +9,7 @@
 GAML gives mod developers more freedom compared to existing mod loaders, allowing mods to run code both before and after the game is loaded.
 
 ## To Do
-- [ ] Support vanilla Godot 3.x
+- [x] Support vanilla Godot 3.x
 - [ ] Support vanilla Godot 4.x
 - [x] Installation flow
 	- [x] Create required files
@@ -19,7 +19,7 @@ GAML gives mod developers more freedom compared to existing mod loaders, allowin
 	- [x] "Inject" mod loader (via bootstrapper?)
 	- [ ] Load & verify mods
 	- [ ] Initialise mods
-	- [ ] Load game
+	- [x] Load game
 - [ ] Harmony-esque hooking
 	- [ ] Prefixes
 	- [ ] Postfixes
