@@ -20,6 +20,8 @@ func create_configs(exec_path):
 	gaml.set_value("autoload", "GAML", "*" + gaml_path + "/ghost.gd")
 	gaml.set_value("autoload", "GAMLB", gaml_path + "/bootstrapper.gd")
 
+	gaml.set_value("application", "run/main_scene", gaml_path + "/ghost.tscn")
+
 	gaml.save(gaml_path + "/gaml.cfg")
 	print("Copying gaml.cfg to override.cfg")
 	gaml.save(override_path)

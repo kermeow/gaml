@@ -45,9 +45,8 @@ func _load_game():
 		var node = get_node("/root/%s" % key)
 		var script_path = game_cfg.get_value("autoload", key).trim_prefix("*")
 		var script = load(script_path)
-		node.set_script(node)
+		node.set_script(script)
 		call_deferred("_reinit_node", node, false)
 	
 	var main_scene = game_cfg.get_value("application", "run/main_scene")
-	print("Main scene is %s" % main_scene)
 	get_tree().change_scene(main_scene)
