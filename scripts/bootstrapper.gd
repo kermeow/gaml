@@ -11,4 +11,3 @@ func _init():
 		get_tree().quit()
 	ProjectSettings.load_resource_pack(gaml_pck)
 	GAML.set_script(load("res://gaml/GAML.gd"))
-	GAML.bootstrap_finish()
