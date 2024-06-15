@@ -5,8 +5,10 @@
 **GAML** takes advantage of Godot's built-in features to inject itself and other mods into any[^1] Godot game.
 [^1]: Not all builds of the engine are confirmed to be working, and only 3.5 is currently officially supported.
 
-## Why GAML?
-GAML gives mod developers more freedom compared to existing mod loaders, allowing mods to run code both before and after the game is loaded.
+## Attribution
+<img src="gaml.svg" height="256"/><img src="thumbnail.png" height="256"/>
+
+Thank you [pyrule](https://github.com/Gapva) for the logo and social preview ❤️
 
 ## To Do
 - [x] Support vanilla Godot 3.x
