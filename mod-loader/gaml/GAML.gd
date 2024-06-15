@@ -1,5 +1,7 @@
 extends Node
 
+const GD_VERSION: int = 3
+
 var exec_path = OS.get_executable_path().get_base_dir()
 var gaml_path = exec_path.plus_file("gaml")
 
@@ -8,22 +10,6 @@ var paths = {
 	"mods": gaml_path.plus_file("mods"),
 	"asset_mods": gaml_path.plus_file("asset-mods"),
 }
-
-const Semver = preload("res://gaml/Semver.gd")
-
-var Version = _gaml_version()
-func _gaml_version():
-	var version = Semver.new()
-	version.parse("0.1.0")
-	return version
-var GodotVersion = _godot_version()
-func _godot_version():
-	var version = Semver.new()
-	var engine_version = Engine.get_version_info()
-	version.major = engine_version.major
-	version.minor = engine_version.minor
-	version.patch = engine_version.patch
-	return version
 
 var hehlib = preload("res://hehlib/hehlib.gd").new()
 var asset_loader = preload("res://gaml/RuntimeAssetLoader.gd").new()
@@ -113,13 +99,60 @@ func _load_asset_mod(path):
 		var res_path = "res://" + local_path
 		resource.take_over_path(res_path)
 
+# GAML Mods
+const Mod = preload("res://gaml/Mod.gd")
+const Semver = preload("res://gaml/Semver.gd")
+
+var mods = {}
+var _initialised_mods = []
+
+func _load_mods():
+	for path in _list_files(paths.mods):
+		if path.get_extension() != "gaml": continue
+		_load_mod(path)
+
+func _load_mod(path: String):
+	var short_name = path.get_basename()
+	var file = File.new()
+	file.open(path, File.READ)
+	if file.get_buffer(4) != PoolByteArray([0x67, 0x61, 0x6d, 0x6c]): return
+	if file.get_8() != GD_VERSION:
+		logger.output("Not loading %s, Godot version mismatch" % short_name)
+		return
+	logger.output("Loading %s" % short_name)
+	var mod_path = file.get_buffer(file.get_16()).get_string_from_ascii()
+	var pck_position = file.get_position()
+	ProjectSettings.load_resource_pack(path, false, pck_position)
+	var mod = load(mod_path) as Mod
+	mods[mod.mod_id] = mod
+
+var _dependency_cycle = []
+
+func _init_mods():
+	for mod_id in mods.keys():
+		if mod_id in _initialised_mods: continue
+		_init_mod(mods[mod_id])
+
+func _init_mod(mod: Mod):
+	if _dependency_cycle.has(mod.mod_id):
+		logger.output("Cyclic dependency! Skipping. (%s: %s)" % [mod.mod_id, _dependency_cycle])
+		return
+	_dependency_cycle.append(mod.mod_id)
+	for dependency in mod.mod_dependencies:
+		if !mods.has(dependency):
+			logger.output("Dependency %s of %s is missing! Mod will not be loaded." % [dependency, mod.mod_id])
+			return
+		if !_initialised_mods.has(dependency): _init_mod(mods[dependency])
+	mod.init()
+	_dependency_cycle.erase(mod.mod_id)
+
 # Main
 func _enter_tree():
 	get_tree().change_scene("res://gaml/Loading.tscn")
 
 func _ready():
-	
 	_load_asset_mods()
-	
+	_load_mods()
+	_init_mods()
 	hehlib.inject_hooked_scripts()
 	call_deferred("_load_game")
