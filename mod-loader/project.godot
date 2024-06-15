@@ -14,6 +14,7 @@ config/name="GAML"
 config/description="Godot Advanced Mod Loader"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="GAML"
+config/icon="res://gaml.svg"
 
 [display]
 
