@@ -17,6 +17,7 @@ Thank you [pyrule](https://github.com/Gapva) for the logo and social preview ❤
 	- [x] Create required files
 	- [x] Generate configurations
 		- [x] Replace autoloads
+- [ ] Mod format & creation
 - [ ] Mod loading flow
 	- [x] "Inject" mod loader (via bootstrapper?)
 	- [ ] Load & verify mods
