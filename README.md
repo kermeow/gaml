@@ -9,12 +9,12 @@
 GAML gives mod developers more freedom compared to existing mod loaders, allowing mods to run code both before and after the game is loaded.
 
 ## To-do
-- [ ] Installation flow
-	- [ ] Create required files
-	- [ ] Generate configurations
-		- [ ] Replace autoloads
+- [x] Installation flow
+	- [x] Create required files
+	- [x] Generate configurations
+		- [x] Replace autoloads
 - [ ] Mod loading flow
-	- [ ] "Inject" mod loader (via bootstrapper?)
+	- [x] "Inject" mod loader (via bootstrapper?)
 	- [ ] Load & verify mods
 	- [ ] Initialise mods
 	- [ ] Load game
