@@ -23,6 +23,7 @@ func _execute_hook(hook_id:String, caller:Node, params:Array):
 	return hook.node.call(hook.method, caller, params)
 
 var script_hooks = {}
+var script_special_hooks = {}
 
 func _get_method_hooks(path: String, method: String):
 	var hooks = script_hooks.get(path, {})
@@ -35,10 +36,10 @@ func _get_method_hooks(path: String, method: String):
 	return method_hooks
 	
 func _get_special_hooks(path: String, method: String):
-	var hooks = script_hooks.get(path, {})
+	var hooks = script_special_hooks.get(path, {})
 	var method_hooks = hooks.get(method, [])
 	if !hooks.has(method): hooks[method] = method_hooks
-	if !script_hooks.has(path): script_hooks[path] = hooks
+	if !script_hooks.has(path): script_special_hooks[path] = hooks
 	return method_hooks
 
 func _special_warning(method: String):
@@ -64,7 +65,6 @@ func hook_script_special(path: String, method: String, node: Node, hook_method: 
 
 func _generate_hooked_script(path: String) -> GDScript:
 	var original_script = load(path) as GDScript
-	print(original_script.has_source_code())
 	var method_list = _parse_method_list(original_script.get_script_method_list())
 	var script = GDScript.new()
 	var source = "extends \"%s\"\n" % path
@@ -85,7 +85,16 @@ func _generate_hooked_script(path: String) -> GDScript:
 				source += "\tvar _r%02x = hehlib._execute_hook(\"%s\", self, [_r,%s])\n" % [call_index, postfix, method.arg_string]
 				call_index += 1
 			source += "\treturn _r\n"
-	print(source)
+	if script_special_hooks.has(path):
+		var hooks = script_special_hooks.get(path)
+		for method_name in hooks.keys():
+			var method_hooks = hooks.get(method_name)
+			var arg_string = ""
+			if method_name == "_process" or method_name == "_physics_process": arg_string = "_delta"
+			source += "func %s(%s):\n" % [method_name, arg_string]
+			for hook in method_hooks:
+				source += "\tvar _r%02x = hehlib._execute_hook(\"%s\", self, [%s])\n" % [call_index, hook, arg_string]
+				call_index += 1
 	script.source_code = source
 	script.reload()
 	return script
@@ -114,7 +123,7 @@ func _get_hooked_script(path: String) -> GDScript:
 	return script
 
 func load_script(path: String):
-	if script_hooks.has(path):
+	if script_hooks.has(path) or script_special_hooks.has(path):
 		logger.output("Getting hooked script %s" % path)
 		return _get_hooked_script(path)
 	return load(path)
