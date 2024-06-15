@@ -7,3 +7,19 @@
 
 ## Why GAML?
 GAML gives mod developers more freedom compared to existing mod loaders, allowing mods to run code both before and after the game is loaded.
+
+## To-do
+- [ ] Installation flow
+	- [ ] Create required files
+	- [ ] Generate configurations
+		- [ ] Replace autoloads
+- [ ] Mod loading flow
+	- [ ] "Inject" mod loader (via bootstrapper?)
+	- [ ] Load & verify mods
+	- [ ] Initialise mods
+	- [ ] Load game
+- [ ] Harmony-esque hooking
+	- [ ] Prefixes
+	- [ ] Postfixes
+	- [ ] Result replacement
+- [ ] Mono support
