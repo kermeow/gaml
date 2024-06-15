@@ -1,9 +1,8 @@
 # Godot Advanced Mod Loader
 >[!WARNING]
->This tool is still deep in development and breaking changes will come with every new version. For simpler mods that only involve skinning/asset replacement, consider [GUMM](https://github.com/KoBeWi/Godot-Universal-Mod-Manager).
+>Currently, GAML should work for Godot 3.1 and above. Support for 4.x will come soon and support for versions below 3.1 is not planned.
 
-**GAML** takes advantage of Godot's built-in features to inject itself and other mods into any[^1] Godot game.
-[^1]: Not all builds of the engine are confirmed to be working, and only 3.5 is currently officially supported.
+**GAML** takes advantage of Godot's built-in features to inject itself and other mods into any Godot game.
 
 [Todo List](https://github.com/kermeow/gaml/issues/1)
 
