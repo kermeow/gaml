@@ -123,7 +123,10 @@ func _get_hooked_script(path: String) -> GDScript:
 	return script
 
 func load_script(path: String):
-	if script_hooks.has(path) or script_special_hooks.has(path):
+	if has(path):
 		logger.output("Getting hooked script %s" % path)
 		return _get_hooked_script(path)
 	return load(path)
+
+func has(path: String):
+	return script_hooks.has(path) or script_special_hooks.has(path)

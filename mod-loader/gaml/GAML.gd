@@ -118,6 +118,7 @@ func _enter_tree():
 	get_tree().change_scene("res://gaml/Loading.tscn")
 
 func _ready():
-	
 	_load_asset_mods()
+	
+	get_tree().set_script(preload("res://hehlib/HookedSceneTree.gd"))
 	call_deferred("_load_game")
