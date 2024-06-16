@@ -2,7 +2,9 @@
 
 **GAML** is a tool for modding games made in the Godot Engine.
 <hr/>
+
 ## Why GAML?
+
 **GAML** has more advanced functionality that other Godot modding tools (such as [GUMM](https://github.com/KoBeWi/Godot-Universal-Mod-Manager/)) lack.
 
 This includes but is not limited to:
