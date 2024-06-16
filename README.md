@@ -4,8 +4,6 @@
 
 **GAML** takes advantage of Godot's built-in features to inject itself and other mods into any Godot game.
 
-[Todo List](https://github.com/kermeow/gaml/issues/1)
-
 ## Attribution
 <img src="gaml.svg" height="256"/><img src="thumbnail.png" height="256"/>
 
