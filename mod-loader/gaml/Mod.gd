@@ -7,7 +7,7 @@ export(Array, String) var mod_dependencies
 
 export(String, DIR) var root_directory
 
-var logger = preload("res://gaml/Logger.gd").new(mod_id)
+var logger
 var hehlib = GAML.hehlib
 
 func _init(_id = "unique_mod_id", _name = "Mod", _version = "1.0.0", _deps = [], _dir = ""):

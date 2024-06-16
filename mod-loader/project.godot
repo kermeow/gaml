@@ -25,6 +25,10 @@ GAML="*res://gaml/GAML.gd"
 window/size/width=640
 window/size/height=480
 
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/gaml_plugin/plugin.cfg" )
+
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true

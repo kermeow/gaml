@@ -104,7 +104,6 @@ const Mod = preload("res://gaml/Mod.gd")
 const Semver = preload("res://gaml/Semver.gd")
 
 var mods = {}
-var _initialised_mods = []
 
 func _load_mods():
 	for path in _list_files(paths.mods):
@@ -112,7 +111,7 @@ func _load_mods():
 		_load_mod(path)
 
 func _load_mod(path: String):
-	var short_name = path.get_basename()
+	var short_name = path.get_file()
 	var file = File.new()
 	file.open(path, File.READ)
 	if file.get_buffer(4) != PoolByteArray([0x67, 0x61, 0x6d, 0x6c]): return
@@ -125,7 +124,9 @@ func _load_mod(path: String):
 	ProjectSettings.load_resource_pack(path, false, pck_position)
 	var mod = load(mod_path) as Mod
 	mods[mod.mod_id] = mod
+	mod.logger = preload("res://gaml/Logger.gd").new(mod.mod_id)
 
+var _initialised_mods = []
 var _dependency_cycle = []
 
 func _init_mods():
@@ -143,6 +144,7 @@ func _init_mod(mod: Mod):
 			logger.output("Dependency %s of %s is missing! Mod will not be loaded." % [dependency, mod.mod_id])
 			return
 		if !_initialised_mods.has(dependency): _init_mod(mods[dependency])
+	logger.output("Initialising %s" % mod.mod_id)
 	mod.init()
 	_dependency_cycle.erase(mod.mod_id)
 
