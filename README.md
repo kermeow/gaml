@@ -1,8 +1,13 @@
 # Godot Advanced Mod Loader
->[!WARNING]
->Currently, GAML should work for Godot 3.1 and above. Support for 4.x will come soon and support for versions below 3.1 is not planned.
 
-**GAML** takes advantage of Godot's built-in features to inject itself and other mods into any Godot game.
+**GAML** is a tool for modding games made in the Godot Engine.
+
+## Why GAML?
+**GAML** has more advanced functionality that other Godot modding tools (such as [GUMM](https://github.com/KoBeWi/Godot-Universal-Mod-Manager/)) lack.
+This includes but is not limited to:
+- **Script hooking** (via [hehlib](https://github.com/kermeow/gaml/tree/master/mod-loader/hehlib))
+- **Runs first** (GAML and mods are loaded before the game)
+- **Mod dependencies**
 
 ## Attribution
 <img src="gaml.svg" height="256"/><img src="thumbnail.png" height="256"/>
