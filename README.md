@@ -11,6 +11,7 @@ This includes but is not limited to:
 - **Script hooking** (via [hehlib](https://github.com/kermeow/gaml/tree/master/mod-loader/hehlib))
 - **Runs first** (GAML and mods are loaded before the game)
 - **Mod dependencies**
+- **Attaches to any game**
 
 ## Attribution
 <img src="gaml.svg" height="256"/><img src="thumbnail.png" height="256"/>
