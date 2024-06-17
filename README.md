@@ -1,4 +1,4 @@
-![Godot Advanced Mod Loader](thumbnail.png)
+![Godot Advanced Mod Loader](assets/thumbnail-long.png)
 
 **GAML** is a tool for modding games made in the Godot Engine.
 <hr/>
@@ -14,6 +14,6 @@ This includes but is not limited to:
 - **Attaches to any game**
 
 ## Attribution
-<img src="gaml.svg" height="256"/><img src="thumbnail.png" height="256"/>
+<img src="assets/gaml.svg" height="256"/><img src="assets/thumbnail.png" height="256"/>
 
 Thank you [pyrule](https://github.com/Gapva) for the logo and social preview ❤️
