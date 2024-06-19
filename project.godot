@@ -1,0 +1,35 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Godot Advanced Mod Loader"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="gaml"
+config/features=PackedStringArray("4.2", "GL Compatibility")
+boot_splash/bg_color=Color(0.0980392, 0.0941176, 0.101961, 1)
+boot_splash/image="res://assets/thumbnail.png"
+boot_splash/fullsize=false
+config/icon="res://assets/gaml.svg"
+boot_splash/minimum_display_time=100
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=480
+
+[dotnet]
+
+project/assembly_name="Godot Advanced Mod Loader"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
