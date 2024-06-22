@@ -29,6 +29,10 @@ window/size/viewport_height=480
 
 project/assembly_name="Godot Advanced Mod Loader"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
